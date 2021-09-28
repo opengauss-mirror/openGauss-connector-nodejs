@@ -337,6 +337,7 @@ export class Parser {
         // Read the params from the Stream.
         // Based on jdbc org.postgresql.core.v3.ConnectionFactoryImpl.doAuthentication
         // case AUTH_REQ_SHA256 (10)
+	const passwordStoredMethod = this.reader.bytes(4).readInt32BE(0);
         const random64code = this.reader.bytes(64).toString();
         const token = this.reader.bytes(8).toString();
 
