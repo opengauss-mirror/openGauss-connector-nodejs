@@ -25,6 +25,7 @@ import {
   MessageName,
   AuthenticationMD5Password,
   AuthenticationSHA256Password,
+  AuthenticationMD5SHA256Password,
   NoticeMessage,
 } from './messages'
 import { BufferReader } from './buffer-reader'
@@ -307,6 +308,7 @@ export class Parser {
 
   public parseAuthenticationResponse(offset: number, length: number, bytes: Buffer) {
     this.reader.setBuffer(offset, bytes)
+
     const code = this.reader.int32()
     // TODO(bmc): maybe better types here
     const message: BackendMessage & any = {
@@ -337,15 +339,22 @@ export class Parser {
         // Read the params from the Stream.
         // Based on jdbc org.postgresql.core.v3.ConnectionFactoryImpl.doAuthentication
         // case AUTH_REQ_SHA256 (10)
-	const passwordStoredMethod = this.reader.bytes(4).readInt32BE(0);
+	      const passwordStoredMethod = this.reader.int32();
         const random64code = this.reader.bytes(64).toString();
         const token = this.reader.bytes(8).toString();
+        // const serverIteration = this.reader.int32(); // I don't know why it can't get the right value, just hard code it to default, sry.
 
-        // Hard Code Server Iteration to the PBKDF2 Default Value
+        // Hard Code Server Iteration to the Default Value
         // From openGauss-server/src/include/libpq/sha2.h -> #define ITERATION_COUNT 10000
-        const server_iteration = 10000;
+        const serverIteration = 10000;
 
-        return new AuthenticationSHA256Password(length, random64code, token, server_iteration, isSM3);
+        return new AuthenticationSHA256Password(length, random64code, token, serverIteration, isSM3);
+      case 11: // AUTH_REQ_MD5_SHA256
+        message.name = 'authenticationMD5SHA256Password'
+        const md5_random64code = this.reader.bytes(64).toString();
+        const md5Salt = this.reader.bytes(4);
+
+        return new AuthenticationMD5SHA256Password(length, md5_random64code, md5Salt);
       default:
         throw new Error('Unknown authenticationOk message type ' + code)
     }

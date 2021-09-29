@@ -1,6 +1,7 @@
 'use strict'
 const crypto = require('crypto')
 const { SM3 } = require('gm-crypto')
+const utils = require('./utils')
 
 function xorBuffers(a, b) {
   if (!Buffer.isBuffer(a)) {
@@ -29,6 +30,9 @@ function hmacSha256(key, msg) {
 // Generate a Key based on openGauss jdbc driver (PBKDF2WithHmacSHA1)
 // org.postgresql.util.MD5Digest.generateKFromPBKDF2
 function generateKeyFromPBKDF2(password, random64code, server_iteration) {
+    if ((server_iteration == undefined || server_iteration == null)) {
+      server_iteration = 2048;
+    }
     var random32code = Buffer.from(random64code,'hex');
     return crypto.pbkdf2Sync(password, random32code, server_iteration, 32, 'sha1');
 }
@@ -54,6 +58,21 @@ const postgresSha256PasswordHash = function (password, random64code, token, serv
   return h.toString('hex'); // We can use toString instead of our buf2hex
 }
 
+const postgresMd5Sha256PasswordHash = function (password, random64code, md5Salt) {
+  if (typeof password !== 'string') {
+    throw new Error('RFC5802-Art_Chen: client password must be a string')
+  }
+
+  var key = generateKeyFromPBKDF2(password, random64code);
+  var serverKey = hmacSha256(key, 'Sever Key')
+  var clientKey = hmacSha256(key, 'Client Key')
+  var storedKey = sha256(clientKey);
+  var encryptString = random64code + serverKey.toString('hex') + storedKey.toString('hex');
+
+  return "md5" + utils.md5(Buffer.from(encryptString, 'hex') + md5Salt);
+}
+
 module.exports = {
-  postgresSha256PasswordHash
+  postgresSha256PasswordHash,
+  postgresMd5Sha256PasswordHash
 }
