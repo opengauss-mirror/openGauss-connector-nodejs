@@ -30,9 +30,6 @@ function hmacSha256(key, msg) {
 // Generate a Key based on openGauss jdbc driver (PBKDF2WithHmacSHA1)
 // org.postgresql.util.MD5Digest.generateKFromPBKDF2
 function generateKeyFromPBKDF2(password, random64code, server_iteration) {
-    if ((server_iteration == undefined || server_iteration == null)) {
-      server_iteration = 2048;
-    }
     var random32code = Buffer.from(random64code,'hex');
     return crypto.pbkdf2Sync(password, random32code, server_iteration, 32, 'sha1');
 }
@@ -63,13 +60,15 @@ const postgresMd5Sha256PasswordHash = function (password, random64code, md5Salt)
     throw new Error('RFC5802-Art_Chen: client password must be a string')
   }
 
-  var key = generateKeyFromPBKDF2(password, random64code);
+  var key = generateKeyFromPBKDF2(password, random64code, 2048);
   var serverKey = hmacSha256(key, 'Sever Key')
   var clientKey = hmacSha256(key, 'Client Key')
   var storedKey = sha256(clientKey);
   var encryptString = random64code + serverKey.toString('hex') + storedKey.toString('hex');
 
-  return "md5" + utils.md5(Buffer.from(encryptString, 'hex') + md5Salt);
+  var digest = utils.md5(Buffer.concat([Buffer.from(encryptString, 'hex'), md5Salt]));
+
+  return 'md5' + digest;
 }
 
 module.exports = {
