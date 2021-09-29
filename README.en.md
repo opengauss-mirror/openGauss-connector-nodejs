@@ -70,3 +70,8 @@ npm install & npm run build
   
   Click [here](https://opengauss.org/zh/docs/1.0.0/docs/Quickstart/GUC%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E.html)
 
+- [Errors that may occur with NPM]
+  
+  If 'Cannot find.....' appears in this operation ` errors.
+  Check whether the node version is later than V16.
+  Check whether the NPM version is V7 or later. If not, install node of the latest version.

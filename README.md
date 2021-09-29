@@ -64,6 +64,12 @@
     添加以下数据
     add this:     `host    all        all         0.0.0.0/0           sha256 `
     详情请看[这里](https://opengauss.org/zh/docs/1.0.0/docs/Quickstart/GUC%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E.html)
+
+- [npminstall可能会出现的错误]
+    
+    若在此处操作出现 `Cannot find .....` 错误,请查看自己的node版本是否为v16以上
+    npm版本是否为v7以上,若不是，请安装最新版本node
+  
     
 #### 简单测试
 修改packages/pg/test-1.js的服务器配置并执行如下指令
