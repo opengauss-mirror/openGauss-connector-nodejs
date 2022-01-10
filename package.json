@@ -34,5 +34,8 @@
     "arrowParens": "always",
     "trailingComma": "es5",
     "singleQuote": true
+  },
+  "dependencies": {
+    "yarn": "^1.22.11"
   }
 }

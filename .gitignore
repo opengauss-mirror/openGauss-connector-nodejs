@@ -9,3 +9,4 @@ dist
 .DS_Store
 .vscode/
 manually-test-on-heroku.js
+yarn.lock
