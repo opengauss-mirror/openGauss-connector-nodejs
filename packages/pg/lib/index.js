@@ -4,6 +4,7 @@ var Client = require('./client')
 var defaults = require('./defaults')
 var Connection = require('./connection')
 var Pool = require('../../pg-pool')
+var ParallelSearch = require('./parallel-search')
 const { DatabaseError } = require('../../pg-protocol')
 
 const poolFactory = (Client) => {
@@ -23,6 +24,7 @@ var PG = function (clientConstructor) {
   this.Connection = Connection
   this.types = require('pg-types')
   this.DatabaseError = DatabaseError
+  this.ParallelSearch = ParallelSearch
 }
 
 if (typeof process.env.NODE_PG_FORCE_NATIVE !== 'undefined') {
