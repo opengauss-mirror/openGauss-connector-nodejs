@@ -76,7 +76,7 @@ class ParallelSearch {
         throw new Error(`must contain exactly one query, found ${statements.length}`);
     }
 
-    const vectorOperators = /<->|<=>|<#>|<+>|<~>|<%>/;
+    const vectorOperators = /<->|<=>|<#>|<\+>|<~>|<%>/;
     if (!vectorOperators.test(trimmedSql)) {
         throw new Error('invalid sql template: must contain vector operator <->, <=>, <+>, <~>, <%> or <#>');
     }
