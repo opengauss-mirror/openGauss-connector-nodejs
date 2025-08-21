@@ -19,7 +19,8 @@ class ParallelSearch {
     if (!Array.isArray(paramsList) || !paramsList.length) throw new Error('invalid paramsList');
 
     if (maxThreads <= 0) throw new Error('number of threads must be greater than 0');
-
+    
+    maxThreads = Math.min(maxThreads, paramsList.length);
     try {
       await this.initConnections(dbConfig, maxThreads, searchParams);
 
